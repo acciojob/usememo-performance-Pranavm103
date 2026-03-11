@@ -2,64 +2,56 @@ import React, { useState, useMemo } from "react";
 
 function App() {
 
-  // create 50 tasks
-  const tasks = [];
-  for (let i = 1; i <= 25; i++) {
-    tasks.push({ id: i, title: `Active Task ${i}`, completed: false });
+  // generate tasks
+  const todos = [];
+  for (let i = 1; i <= 50; i++) {
+    todos.push({
+      id: i,
+      title: `Todo ${i}`,
+      completed: i > 25
+    });
   }
 
-  for (let i = 26; i <= 50; i++) {
-    tasks.push({ id: i, title: `Completed Task ${i}`, completed: true });
-  }
+  const [tab, setTab] = useState("all");
 
-  const [filter, setFilter] = useState("all");
+  const filteredTodos = useMemo(() => {
 
-  // useMemo for filtering
-  const filteredTasks = useMemo(() => {
-
-    if (filter === "active") {
-      return tasks.filter(task => !task.completed);
+    if (tab === "active") {
+      return todos.filter(todo => !todo.completed);
     }
 
-    if (filter === "completed") {
-      return tasks.filter(task => task.completed);
+    if (tab === "completed") {
+      return todos.filter(todo => todo.completed);
     }
 
-    return tasks;
+    return todos;
 
-  }, [filter]);
+  }, [tab]);
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div>
+      <h1>Todo List App</h1>
 
-      <h2>Todo List</h2>
+      <button onClick={() => setTab("all")}>All</button>
+      <button onClick={() => setTab("active")}>Active</button>
+      <button onClick={() => setTab("completed")}>Completed</button>
 
-      <button onClick={() => setFilter("all")}>All</button>
-      <button onClick={() => setFilter("active")}>Active</button>
-      <button onClick={() => setFilter("completed")}>Completed</button>
+      <ul>
+        {filteredTodos.map(todo => {
 
-      <TaskList tasks={filteredTasks} />
+          // Artificial slow rendering
+          let startTime = performance.now();
+          while (performance.now() - startTime < 500) {}
 
+          return (
+            <li key={todo.id}>
+              {todo.title}
+            </li>
+          );
+
+        })}
+      </ul>
     </div>
-  );
-}
-
-function TaskList({ tasks }) {
-
-  // Artificial slow rendering
-  let startTime = performance.now();
-  while (performance.now() - startTime < 500) {
-    // Slow rendering for 500ms
-  }
-
-  return (
-    <ul>
-      {tasks.map(task => (
-        <li key={task.id}>
-          {task.title} {task.completed ? "(Completed)" : "(Active)"}
-        </li>
-      ))}
-    </ul>
   );
 }
 
